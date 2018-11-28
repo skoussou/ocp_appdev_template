@@ -27,3 +27,62 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 # * CLUSTER: the base url of the cluster used (e.g. na39.openshift.opentlc.com)
 
 # To be Implemented by Student
+echo
+echo
+echo "#######################################################################################################"
+echo "creating app APPLICATION_NAME=jenkins with persistent storage and sufficient resources in $GUID-jenkins"
+echo "#######################################################################################################"
+echo GUID=$GUID
+echo REPO=$REPO
+echo CLUSTER=$CLUSTER
+oc new-app -f ../templates/jenkins.yaml -p APPLICATION_NAME=jenkins -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-jenkins -p APPS_CLUSTER_HOSTNAME=apps.$CLUSTER -n $GUID-jenkins
+
+
+echo
+echo
+echo "##########################################################################################################################################"
+echo "Create a build configuration to build the custom Maven slave pod to include Skopeo from openshift/jenkins-agent-maven-35-centos7:v3.11 in $GUID-jenkins"
+echo "##########################################################################################################################################"
+
+# oc import-image openshift/jenkins-agent-maven-35-centos7:v3.11 --from=docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11 --confirm -n $GUID-jenkins
+
+oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
+      USER root\nRUN yum -y install skopeo && yum clean all\n
+      USER 1001' --name=jenkins-agent-appdev -n $GUID-jenkins
+
+echo
+echo
+echo "##########################################################################################################################################"
+echo "Set up 3 build configurations with pointers to the pipelines in the source code project."
+echo
+echo "Each build configuration needs to point to the source code repository and the respective contextDir. The build configurations also need the following environment variables:"
+echo
+echo " BuildConfig to Jenkinsfile file for MLBParks"
+echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
+echo "   - contextDir: MLBParks"
+echo
+echo " BuildConfig to Jenkinsfile file for Nationalparks"
+echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
+echo "   - contextDir: Nationalparks"
+echo
+echo " BuildConfig to Jenkinsfile file for ParksMap"
+echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
+echo "   - contextDir: ParksMap"
+echo
+echo "- GUID: The common GUID for all projects"
+echo "- CLUSTER: The cluster base URL—for example, na39.openshift.opentlc.com"
+echo  
+echo "##########################################################################################################################################"
+
+echo 
+echo "##########################################################################################################################################"
+echo
+echo " TODO: BuildConfig for Pipeline for MLBParks"
+echo
+echo " TODO: BuildConfig for Pipeline for Nationalparks"
+echo
+echo " TODO: BuildConfig for Pipeline for ParksMap"
+echo
+echo "##########################################################################################################################################"
+
+
