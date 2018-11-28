@@ -50,39 +50,33 @@ oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11
       USER root\nRUN yum -y install skopeo && yum clean all\n
       USER 1001' --name=jenkins-agent-appdev -n $GUID-jenkins
 
-echo
-echo
+echo 
 echo "##########################################################################################################################################"
 echo "Set up 3 build configurations with pointers to the pipelines in the source code project."
 echo
-echo "Each build configuration needs to point to the source code repository and the respective contextDir. The build configurations also need the following environment variables:"
 echo
-echo " BuildConfig to Jenkinsfile file for MLBParks"
+echo " DONE: BuildConfig for Pipeline for MLBParks"
 echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
 echo "   - contextDir: MLBParks"
 echo
-echo " BuildConfig to Jenkinsfile file for Nationalparks"
+#oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=mlbparks -p CONTEXT_DIR=MLBParks -n stk-jenkin
+oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=mlbparks -p CONTEXT_DIR=MLBParks -n $GUID-jenkins
+
+echo
+echo " DONE: BuildConfig for Pipeline for Nationalparks"
 echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
 echo "   - contextDir: Nationalparks"
 echo
-echo " BuildConfig to Jenkinsfile file for ParksMap"
+# oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=nationalparks -p CONTEXT_DIR=Nationalparks -n stk-jenkins
+oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=nationalparks -p CONTEXT_DIR=Nationalparks -n $GUID-jenkins
+
+echo
+echo " DONE: BuildConfig for Pipeline for ParksMap"
 echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
 echo "   - contextDir: ParksMap"
 echo
-echo "- GUID: The common GUID for all projects"
-echo "- CLUSTER: The cluster base URL—for example, na39.openshift.opentlc.com"
-echo  
-echo "##########################################################################################################################################"
-
-echo 
-echo "##########################################################################################################################################"
-echo
-echo " TODO: BuildConfig for Pipeline for MLBParks"
-echo
-echo " TODO: BuildConfig for Pipeline for Nationalparks"
-echo
-echo " TODO: BuildConfig for Pipeline for ParksMap"
-echo
+#oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=parksmap -p CONTEXT_DIR=ParksMap -n stk-jenkins
+oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=parksmap -p CONTEXT_DIR=ParksMap -n $GUID-jenkins
 echo "##########################################################################################################################################"
 
 
