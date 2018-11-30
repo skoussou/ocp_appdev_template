@@ -28,7 +28,7 @@ objects:
             command:
             - curl
             - -s
-            - http://${APPLICATION_NAME}:8080/ws/data/load/
+            - http://${APPLICATION_NAME}-${COLOR}:8080/ws/data/load/
             containerName: ${APPLICATION_NAME}
           failurePolicy: Ignore
       type: Rolling
