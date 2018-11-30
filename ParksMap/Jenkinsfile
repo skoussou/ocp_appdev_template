@@ -16,10 +16,198 @@ podTemplate(
     echo "GUID: ${GUID}"
     echo "CLUSTER: ${CLUSTER}"
 
+    def mvnCmd = "mvn -s ../nexus_settings.xml"
+    def nexusMavenPublicRepoURL = "http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/maven-all-public"
+
+
     // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
     // You need to build the application in directory `ParksMap`.
     // Also copy "../nexus_settings.xml" to your build directory
     // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+    def groupId    = "tbd"
+    def artifactId = "tbd"
+    def version    = "tbd"
+
+    def devTag  = "tbd"
+    def prodTag = "tbd"
+
+    // Checkout Source Code
+    stage('Checkout Source') {
+        echo 'Download Ocp_appdev_template ParksMap'
+        git branch: "master", credentialsId: '${GUID}-jenkins-github-secret', url : 'https://github.com/skoussou/ocp_appdev_template.git'
+
+        echo "assigning GAV variables"
+        dir ('ParksMap') {
+            echo "   "
+            echo "   "
+            echo "   "
+            echo "---------------------------------------------------"
+            echo "       VARIABLES BEFORE ASSIGNMENT                 "
+            echo "---------------------------------------------------"
+            echo " groupId ==> ${groupId}"
+            echo " artifactId ==> ${artifactId}"
+            echo " version ==> ${version}"
+            echo " devTag ==> ${devTag}"
+            echo " prodTag ==> ${prodTag}"
+            echo "---------------------------------------------------"
+            groupId    = getGroupIdFromPom("pom.xml")
+            artifactId = getArtifactIdFromPom("pom.xml")
+            version    = getVersionFromPom("pom.xml")
+            devTag  = "${version}-${BUILD_NUMBER}"
+            prodTag = "${version}" 
+            echo "   "
+            echo "   "
+            echo "   "
+            echo "---------------------------------------------------"
+            echo "       VARIABLES AFTER ASSIGNMENT                 "
+            echo "---------------------------------------------------"
+            echo " groupId ==> ${groupId}"
+            echo " artifactId ==> ${artifactId}"
+            echo " version ==> ${version}"
+            echo " devTag ==> ${devTag}"
+            echo " prodTag ==> ${prodTag}"
+            echo "---------------------------------------------------"
+        }
+    }   
+
+    // Using Maven build the war file
+    // Do not run tests in this step
+    stage('Build App') {
+
+        dir ('ParksMap') {
+	         // Build, package and test with custom settings.xml pointing to corporate NEXUS
+             echo "Building version ${version}"
+             echo "Building command --> [sh ${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}]"
+             sh "${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}"
+        }
+    }
+
+
+    // Execute the following tests in parallel and present the results in the build log:
+    // - Unit tests
+    // - Code coverage tests
+
+    stage('Parallel Unit & Coverage Steps') {
+    parallel 'UnitTests': {
+        stage('UnitTests') {
+            dir ('ParksMap') {  
+
+                echo "Running Unit Tests"
+                sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"
+            }
+        }
+    }, 'CoverageTests': {
+        stage('CoverageTests') {
+            dir ('ParksMap') {  
+
+                echo "Running Code Analysis"
+                sh "${mvnCmd} sonar:sonar -DURL=${nexusMavenPublicRepoURL} -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+            }
+        }
+    }
+    }
+
+
+   // Build the OpenShift Image in OpenShift and tag it.
+    stage('Build and Tag OpenShift Image') {
+        dir ('ParksMap') {  
+            sh "ls"
+            echo "checking inside target directory"
+            sh "ls target"
+            echo "Building OpenShift container image parksmap:${devTag}"
+
+           // DUE to s2I the image is in the target folder
+           sh "oc start-build parksmap --follow --from-file=./target/parksmap.jar -n ${GUID}-parks-dev"
+           
+           openshiftTag alias: 'false', destStream: 'parksmap', destTag: "${devTag}", destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'parksmap', srcTag: 'latest', verbose: 'false', apiURL: '', authToken: '', destinationAuthToken: ''
+        }
+    }
+
+
+
+    // Publish the built war file to Nexus
+    stage('Publish to Nexus') {
+        dir ('ParksMap') {  
+            echo "Publish to Nexus"
+            sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
+        }
+    }
+
+    // Copy Image to Nexus Docker Registry
+    stage('Copy Image to Nexus Docker Registry') {
+        echo "Copy image to Nexus Docker Registry"
+
+        // Copy image from JENKINS into NEXUS REGISTRY
+        sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/${GUID}-parks-dev/parksmap:${devTag} docker://nexus-registry.${GUID}-nexus.svc.cluster.local:5000/parksmap:${devTag}"
+
+    }
+
+
+    stage('Tag image For Prod') {
+        echo "Tagging for production parksmap:${prodTag}"
+
+        // Tag the built image with the production tag.
+        openshiftTag alias: 'false', destStream: 'parksmap', destTag: "${prodTag}", destinationNamespace: "${GUID}-parks-dev", namespace: "${GUID}-parks-dev", srcStream: 'parksmap', srcTag:  "${devTag}", verbose: 'false'
+
+    }
+
+          // Blue/Green Deployment into Production
+          // -------------------------------------
+          // Do not activate the new version yet.
+
+
+          stage('Blue/Green Production Deployment') {
+
+              // Hold the servicenames
+              def destApp   = ""
+              def activeApp = ""
+              
+              // Status of Service (Exist/Doesn not Exst)
+              def appGreenStatus = sh(returnStatus: true, script: "oc get svc parksmap-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
+              echo "appGreenStatus found --> ${appGreenStatus}"
+
+              def appBlueStatus = sh(returnStatus: true, script: "oc get svc parksmap-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
+              echo "appBlueStatus found --> ${appBlueStatus}"
+          
+              // Deicde which one is active npw and which one willl become active
+              if (appGreenStatus == 0) { 
+                  destApp = "parksmap-blue"
+                  activeApp = "parksmap-green"
+              } else {
+                  destApp = "parksmap-green"
+                  activeApp = "parksmap-blue"
+              }
+            
+              echo "Active Application:      " + activeApp
+              echo "Destination Application: " + destApp
+
+
+              // Update the Image on the Production Deployment Config
+              echo "Setting DC [${destApp}] to use image parksmap:${prodTag}"
+              sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:${prodTag} -n ${GUID}-parks-prod"
+
+              echo "Begin new deployment for [${destApp}] using image parksmap:${prodTag}"
+              openshiftDeploy depCfg: "${destApp}", namespace: "${GUID}-parks-prod", verbose: 'false', waitTime: '', waitUnit: 'sec'
+
+              echo "Verify Deployment [${destApp}]"
+              openshiftVerifyDeployment depCfg: "${destApp}", namespace: "${GUID}-parks-prod", replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+
+              echo "Delete SVC of active app [${activeApp}]"
+              echo "oc delete service ${activeApp} -n ${GUID}-parks-prod --ignore-not-found=true"
+              sh "oc delete service ${activeApp} -n ${GUID}-parks-prod --ignore-not-found=true"
+
+              echo "Create SVC for dest app [${destApp}] and label it app=parksmap && type=parksmap-backend"
+              echo "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod"
+              sh "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod  --dry-run=true -o yaml"
+         
+              sh "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod"
+
+              echo "Pointing ParksMap Application Route to ${destApp}
+              sh "oc patch route/parksmap -p '{\"spec\":{\"to\":{\"name\":\"${destApp}\"}}}' --dry-run=true -o yaml"
+
+              sh "oc patch route/parksmap -p '{\"spec\":{\"to\":{\"name":\"${destApp}\"}}}' -n dsk-parks-prod
+          }
+
 
   }
 }
