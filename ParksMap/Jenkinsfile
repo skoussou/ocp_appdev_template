@@ -205,7 +205,7 @@ podTemplate(
               echo "Pointing ParksMap Application Route to ${destApp}
               sh "oc patch route/parksmap -p '{\"spec\":{\"to\":{\"name\":\"${destApp}\"}}}' --dry-run=true -o yaml"
 
-              sh "oc patch route/parksmap -p '{\"spec\":{\"to\":{\"name":\"${destApp}\"}}}' -n dsk-parks-prod
+              sh "oc patch route/parksmap -p '{\"spec\":{\"to\":{\"name":\"${destApp}\"}}}' -n dsk-parks-prod"
           }
 
 
