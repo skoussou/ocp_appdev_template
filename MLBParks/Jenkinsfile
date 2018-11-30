@@ -117,7 +117,7 @@ podTemplate(
             }
         }
     }
-}
+    }
 
   /*  stage('Parallel Unit & Coverage Steps') {
       steps {
@@ -145,6 +145,28 @@ podTemplate(
     //        echo "Running Code Analysis"
     //        sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-sdk-sonarqube.apps.fab.example.opentlc.com -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
     //}
+
+    // Build the OpenShift Image in OpenShift and tag it.
+    stage('Build and Tag OpenShift Image') {
+        dir ('MLBParks') {  
+            sh "ls"
+            echo "checking inside target directory"
+            sh "ls target"
+            echo "Building OpenShift container image MLBParks:${devTag}"
+           
+           // PIPELINE SYNTAX: openshiftBuild apiURL: '', authToken: '', bldCfg: 'tasks', buildName: '', checkForTriggeredDeployments: 'false', commitID: '', env: [[name: 'from-file', value: 'http://nexus3-sdk-nexus.apps.fab.example.opentlc.com/repository/maven-releases/org/jboss/quickstarts/eap/tasks/1.0-0/tasks-1.0-0.war']], namespace: '', showBuildLogs: 'false', verbose: 'false', waitTime: '', waitUnit: 'sec'
+
+           // DUE to s2I the image is in the target folder
+           sh "oc start-build tasks --follow --from-file=./target/mlbparks.war -n ${GUID}-parks-dev"
+           //sh "oc start-build tasks --follow --from-file=http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/maven-releases/org/jboss/quickstarts/eap/tasks/${version}/tasks-${version}.war -n sdk-tasks-dev"
+
+          // Tag the image using the devTag (really this is RELEASE tag this way we avoid seeing LATEST everywhere eg. DC and hence we can quickly see POM in prod, JENKINS BUILD Job when debugging)
+          // openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: 'xyz-tasks-dev', namespace: 'xyz-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
+           openshiftTag alias: 'false', destStream: 'tasks', destTag: 'devTag', destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false', apiURL: '', authToken: '', destinationAuthToken: ''
+        }
+    }
+
+
 
  
   }
