@@ -16,10 +16,50 @@ podTemplate(
     echo "GUID: ${GUID}"
     echo "CLUSTER: ${CLUSTER}"
 
+    def mvnCmd = "mvn -s ../nexus_settings.xml"
+    def nexusMavenPublicRepoURL = "http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/maven-all-public"
+
     // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
     // You need to build the application in directory `MLBParks`.
     // Also copy "../nexus_settings.xml" to your build directory
     // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+
+    // Checkout Source Code
+    stage('Checkout Source') {
+        echo 'Download Ocp_appdev_template MLBParks'
+        git branch: "master", url: 'https://github.com/skoussou/ocp_appdev_template/tree/master/Infrastructure/bin'
+
+        echo "checking downloaded directories"
+            dir ('MLBParks') {
+            sh "ls"
+        }
+    }   
+
+    // Using Maven build the war file
+    // Do not run tests in this step
+    stage('Build war') {
+        // The following variables need to be defined at the top level
+        // and not inside the scope of a stage - otherwise they would not
+        // be accessible from other stages.
+        // Extract version and other properties from the pom.xml
+        def groupId    = getGroupIdFromPom("pom.xml")
+        def artifactId = getArtifactIdFromPom("pom.xml")
+        def version    = getVersionFromPom("pom.xml")
+
+        // Set the tag for the development image: version + build number
+        def devTag  = "${version}-${BUILD_NUMBER}"
+        // Set the tag for the production image: version
+        def prodTag = "${version}" 
+
+        dir ('MLBParks') {
+	         // Build, package and test with custom settings.xml pointing to corporate NEXUS
+             sh "ls"
+             echo "Building version ${version}"
+             echo "Building command --> [sh ${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}]"
+             sh "${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}"
+        }
+    }
+
  
   }
 }
