@@ -249,7 +249,6 @@ echo " TODO: SERVICE required"
 # oc process -f ../templates/prod-project/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f -
 
 echo " TODO: ROUTE required"
-# oc process -f ../templates/prod-project/stk-parks-prod-app-frontend-ROUTE.yaml -p=APPLICATION_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=na39.openshift.opentlc.com -l app=parksmap |oc create -f -
-
+oc process -f ../templates/prod-project/stk-parks-prod-app-frontend-ROUTE.yaml -p=ROUTE_NAME=parksmap -p=SERVICE_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=na39.openshift.opentlc.com -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
 
 echo "#################################################################################################"
