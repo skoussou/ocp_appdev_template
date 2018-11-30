@@ -174,7 +174,7 @@ podTemplate(
     // Publish the built war file to Nexus
     stage('Publish to Nexus') {
         echo "Publish to Nexus"
-        sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/
+        sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
     }
 
  
