@@ -226,14 +226,21 @@ podTemplate(
           //def appgreen = sh(returnStdout: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
           //def appbue = sh(returnStdout: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
            
-          def appgreen = sh(returnStatus: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
-          echo "appgreen found --> ${appgreen}"
-          def appbue = sh(returnStatus: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
-          echo "appbue found --> ${appbue}"
+          def appGreenStatus = sh(returnStatus: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
+          echo "appGreenStatus found --> ${appGreenStatus}"
+          def appBlueStatus = sh(returnStatus: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
+          echo "appBlueStatus found --> ${appBlueStatus}"
           
 
           //activeApp = sh(returnStdout: true, script: "oc get route tasks -n ${GUID}-parks-prod -o jsonpath='{ .spec.to.name }'").trim()
-          if (appgreen == "mlbparks-green") { 
+          /*if (appgreen == "mlbparks-green") { 
+            destApp = "mlbparks-blue"
+            activeApp = "mlbparks-green"
+          } else {
+            destApp = "mlbparks-green"
+            activeApp = "mlbparks-blue"
+          }*/
+          if (appGreenStatus == 0) { 
             destApp = "mlbparks-blue"
             activeApp = "mlbparks-green"
           } else {
@@ -260,7 +267,9 @@ podTemplate(
          //sh "oc delete service ${activeApp} -n ${GUID}-parks-prod --ignore-not-found=true"
 
          echo "Create SVC for dest app [${destApp}] and label it app=mlbparks && type=parksmap-backend"
-         echo "expose dc ${destApp} -l app=mlbparks -l type=parksmap-backend -n ${GUID}-parks-prod"
+         echo "oc expose dc ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod"
+         sh "oc expose dc ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod  --dry-run=true -o yaml"
+         //oc expose dc  ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod 
          //sh "oc expose dc ${destApp} -l app=mlbparks -l type=parksmap-backend -n ${GUID}-parks-prod"
 
            // Update the Config Map which contains the users for the Tasks application
