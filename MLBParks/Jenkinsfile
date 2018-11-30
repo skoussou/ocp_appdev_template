@@ -270,7 +270,7 @@ podTemplate(
          echo "oc expose dc ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod"
          sh "oc expose dc ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod  --dry-run=true -o yaml"
          
-         sh "oc expose dc ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod
+         sh "oc expose dc ${destApp} --port=8080 -l app=mlbparks,type=parksmap-backend -n ${GUID}-parks-prod"
 
            // Update the Config Map which contains the users for the Tasks application
       //     sh "oc delete configmap ${destApp}-config -n sdk-tasks-prod --ignore-not-found=true"
