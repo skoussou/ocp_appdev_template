@@ -226,9 +226,9 @@ podTemplate(
           //def appgreen = sh(returnStdout: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
           //def appbue = sh(returnStdout: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
            
-          def appgreen = sh(returnStatus: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          def appgreen = sh(returnStatus: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
           echo "appgreen found --> ${appgreen}"
-          def appbue = sh(returnStatus: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          def appbue = sh(returnStatus: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'")
           echo "appbue found --> ${appbue}"
           
 
