@@ -162,7 +162,7 @@ podTemplate(
 
           // Tag the image using the devTag (really this is RELEASE tag this way we avoid seeing LATEST everywhere eg. DC and hence we can quickly see POM in prod, JENKINS BUILD Job when debugging)
           // openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: 'xyz-tasks-dev', namespace: 'xyz-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
-           openshiftTag alias: 'false', destStream: 'tasks', destTag: 'devTag', destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false', apiURL: '', authToken: '', destinationAuthToken: ''
+           openshiftTag alias: 'false', destStream: 'mlbparks', destTag: 'devTag', destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'mlbparks', srcTag: 'latest', verbose: 'false', apiURL: '', authToken: '', destinationAuthToken: ''
         }
     }
 
