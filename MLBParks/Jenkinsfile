@@ -223,9 +223,14 @@ podTemplate(
           def destApp   = ""
           def activeApp = ""
           // your project names
-          def appgreen = sh(returnStdout: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
-          def appbue = sh(returnStdout: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
-
+          //def appgreen = sh(returnStdout: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          //def appbue = sh(returnStdout: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+           
+          def appgreen = sh(returnStatus: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          echo "appgreen found --> ${appgreen}"
+          def appbue = sh(returnStatus: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          echo "appbue found --> ${appbue}"
+          
 
           //activeApp = sh(returnStdout: true, script: "oc get route tasks -n ${GUID}-parks-prod -o jsonpath='{ .spec.to.name }'").trim()
           if (appgreen == "mlbparks-green") { 
