@@ -27,7 +27,7 @@ podTemplate(
     // Checkout Source Code
     stage('Checkout Source') {
         echo 'Download Ocp_appdev_template MLBParks'
-        git branch: "master", url: 'https://github.com/skoussou/ocp_appdev.git'
+        git branch: "master", credentialsId: 'dsk-jenkins-github-secret', url : 'https://github.com/skoussou/ocp_appdev.git'
 
         echo "checking downloaded directories"
             dir ('MLBParks') {
