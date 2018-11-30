@@ -236,14 +236,14 @@ echo "------------------------------------------------------------------------"
 echo " Microservice [parksmap] Set up blue and green instances for [parksmap] "
 echo "------------------------------------------------------------------------"
 
-oc new-app -f ../templates/prod-project/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=blue -p APPNAME_LABEL="ParksMap (Blue)" --allow-missing-images -l app=parksmap -n ${GUID}-parks-prod
+oc new-app -f ../templates/prod-project/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=blue -p APPNAME_LABEL="ParksMap (Blue)" -l app=parksmap -n ${GUID}-parks-prod
 echo "------------------------------------------------------------------------"
-oc new-app -f ../templates/prod-project/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=green -p APPNAME_LABEL="ParksMap (Green)" --allow-missing-images -l app=parksmap -n ${GUID}-parks-prod
+oc new-app -f ../templates/prod-project/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=green -p APPNAME_LABEL="ParksMap (Green)" -l app=parksmap -n ${GUID}-parks-prod
 echo
 echo
 echo " TODO:	Make the [parksmap-green] service active initially to guarantee a Blue rollout upon the first pipeline run"
 
-oc process -f ../templates/prod-project/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
+oc process -f ../templates/prod-project/stk-parks-prod-app-frontend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
 
 echo " TODO: SERVICE required"
 # oc process -f ../templates/prod-project/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f -
