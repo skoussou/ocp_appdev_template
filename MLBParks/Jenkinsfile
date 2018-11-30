@@ -193,6 +193,8 @@ podTemplate(
         }
     }
 
+  }
+
 }
 
 // Convenience Functions to read variables from the pom.xml
