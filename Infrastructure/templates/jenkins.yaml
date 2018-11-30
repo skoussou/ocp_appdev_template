@@ -115,7 +115,7 @@ objects:
               memory: 4Gi
             requests:
               cpu: "1"
-              memory: 3GI
+              memory: 3Gi
           securityContext:
             capabilities: {}
             privileged: false
