@@ -4,7 +4,7 @@
 
     <groupId>com.openshift.evg.roadshow</groupId>
     <artifactId>nationalparks</artifactId>
-    <version>1.0</version>
+    <version>1.0.Final</version>
     <packaging>jar</packaging>
 
     <parent>
