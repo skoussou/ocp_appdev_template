@@ -18,10 +18,11 @@ echo "Setting up Sonarqube in project $GUID-sonarqube"
 echo
 echo
 echo "#####################################################################"
-echo "importing image for nexus3:latest in $GUID-nexus"
+echo "importing image for  sonarqube:6.7.4in $GUID-sonarqube"
 echo "#####################################################################"
 
-oc import-image wkulhanek/sonarqube:6.7.4 --from=docker.io/redhat-gpte-devopsautomation/sonarqube:6.7.4 --confirm -n $GUID-sonarqube
+oc import-image wkulhanek/sonarqube:6.7.4 --from=docker.io/wkulhanek/sonarqube --confirm -n $GUID-sonarqube
+#oc import-image sonarqube --from=docker.io/redhat-gpte-devopsautomation/sonarqube:6.7.4 --confirm -n $GUID-sonarqube
 
 # create volume claim
 #echo
@@ -37,7 +38,7 @@ oc import-image wkulhanek/sonarqube:6.7.4 --from=docker.io/redhat-gpte-devopsaut
 echo
 echo
 echo "#####################################################################"
-echo "creating app APPLICATION_NAME=sonarqube in $GUID-nexus"
+echo "creating app APPLICATION_NAME=sonarqube in $GUID-sonarqube"
 echo "#####################################################################"
 oc new-app -f ../templates/sonarqube.yaml -p PROJECT_NAMESPACE=$GUID-sonarqube -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -n $GUID-sonarqube
 

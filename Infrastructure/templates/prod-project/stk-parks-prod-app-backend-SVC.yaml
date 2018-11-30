@@ -1,0 +1,27 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: parks-prod-svc-backend
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${DC_NAME}
+      type: parksmap-backend
+    name: ${DC_NAME}
+  spec:
+    ports:
+    - name: 8080-8080
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: ${DC_NAME}
+    type: ClusterIP
+parameters:
+- description: The ${DC_NAME} of the backend application to create a service for 
+  displayName: DC_NAME
+  name: DC_NAME
+  required: true

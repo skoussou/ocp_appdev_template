@@ -50,7 +50,7 @@ echo
 echo "#####################################################################"
 echo "creating app APPLICATION_NAME=nexus3 in $GUID-nexus"
 echo "#####################################################################"
-oc new-app -f ../templates/nexus.yaml -p APPLICATION_NAME=nexus3 -p PROJECT_NAMESPACE=$GUID-nexus -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -n $GUID-nexus
+oc new-app -f ../templates/nexus.yaml -p APPLICATION_NAME=nexus3 -p PROJECT_NAMESPACE=$GUID-nexus -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -l app=nexus3 -n $GUID-nexus
 
 # add claim to DC
 # oc rollout pause dc nexus3

@@ -23,6 +23,19 @@ echo " DONE:	Create a MongoDB database"
 
 oc new-app -f ../templates/dev-project/stk-parks-dev-mongodb-WITHPARAMS-NEW-SECRETS.yaml -p DATABASE_SERVICE_NAME=mongodb -p MONGODB_ADMIN_PASSWORD=mongodb -p MONGODB_DATABASE=parks -p MONGODB_PASSWORD=mongodb -p MONGODB_USER=mongodb -l app=mongodb -n ${GUID}-parks-dev
 
+echo sleeping 10 secs
+sleep 10s
+
+echo "Polling for mongodb to be ready"
+while : ; do
+  echo "Checking if mongodb is Ready..."
+  #oc get pod -n ${GUID}-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
+  oc get pod -n ${GUID}-parks-dev|grep 'mongodb-.*-deploy'|grep -v deploy|grep "1/1"
+  [[ "$?" == "1" ]] || break
+  echo "...no. Sleeping 10 seconds."
+  sleep 10
+done
+
 echo 
 echo " DONE:	Create binary build configurations for the pipelines to use for each microservice"
 
@@ -50,7 +63,7 @@ echo " DONE:	Set deployment hooks to populate the database for the back end serv
 echo " DONE:	Set up liveness and readiness probes"
 echo " DONE:	Expose and label the services properly (parksmap-backend)"
 
-# oc create configmap nationalparks-config --from-literal=APPNAME='MLB Parks (Dev)' --from-literal=DB_HOST=mongodb --from-literal=DB_PORT=27017 --from-literal=DB_USERNAME=mongodb --from-literal=DB_PASSWORD=mongodb --from-literal=DB_NAME=parks -n stk-parks-dev
+# oc create configmap mlbparks-config --from-literal=APPNAME='MLB Parks (Dev)' --from-literal=DB_HOST=mongodb --from-literal=DB_PORT=27017 --from-literal=DB_USERNAME=mongodb --from-literal=DB_PASSWORD=mongodb --from-literal=DB_NAME=parks -n stk-parks-dev
 # Set probes
 # oc rollout pause dc mlbparks
 # oc set probe dc/mlbparks --liveness --failure-threshold=3 --initial-delay-seconds=60 -- echo ok 
