@@ -240,9 +240,23 @@ podTemplate(
           echo "Destination Application: " + destApp
 
 
-      //     // Update the Image on the Production Deployment Config
-         sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/${GUID}-parks-dev/tasks:${prodTag} -n ${GUID}-parks-prod"
+         // Update the Image on the Production Deployment Config
+         echo "Setting DC [${destApp}] to use image mlbparks:${prodTag}"
+         sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:${prodTag} -n ${GUID}-parks-prod"
 
+         echo "Begin new deployment for [${destApp}] using image mlbparks:${prodTag}"
+         //openshiftDeploy depCfg: "${destApp}", namespace: "${GUID}-parks-prod", verbose: 'false', waitTime: '', waitUnit: 'sec'
+
+         echo "Verify Deployment [${destApp}]"
+         //openshiftVerifyDeployment depCfg: "${destApp}", namespace: "${GUID}-parks-prod", replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+
+         echo "Delete SVC of active app [${activeApp}]"
+         echo "oc delete service ${activeApp} -n ${GUID}-parks-prod --ignore-not-found=true"
+         //sh "oc delete service ${activeApp} -n ${GUID}-parks-prod --ignore-not-found=true"
+
+         echo "Create SVC for dest app [${destApp}] and label it app=mlbparks && type=parksmap-backend"
+         echo "expose dc ${destApp} -l app=mlbparks -l type=parksmap-backend -n ${GUID}-parks-prod"
+         //sh "oc expose dc ${destApp} -l app=mlbparks -l type=parksmap-backend -n ${GUID}-parks-prod"
 
            // Update the Config Map which contains the users for the Tasks application
       //     sh "oc delete configmap ${destApp}-config -n sdk-tasks-prod --ignore-not-found=true"
