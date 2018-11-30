@@ -103,7 +103,7 @@ podTemplate(
     parallel 'UnitTests': {
         stage('UnitTests') {
             dir ('MLBParks') {  
-                /* .. Your code/scripts .. */
+
                 echo "Running Unit Tests"
                 sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"
             }
@@ -111,7 +111,7 @@ podTemplate(
     }, 'CoverageTests': {
         stage('CoverageTests') {
             dir ('MLBParks') {  
-                /* .. Your code/scripts .. */
+
                 echo "Running Code Analysis"
                 sh "${mvnCmd} sonar:sonar -DURL=${nexusMavenPublicRepoURL} -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
             }
