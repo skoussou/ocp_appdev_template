@@ -267,7 +267,7 @@ objects:
       app: sonarqube
     name: sonarqube
   spec:
-    host: ${PROJECT_NAMESPACE}-sonarqube.${APPS_CLUSTER_HOSTNAME}
+    host: sonarqube-${GUID}-sonarqube.${APPS_CLUSTER_HOSTNAME}
     port:
       targetPort: 9000
     to:
@@ -303,3 +303,7 @@ parameters:
   displayName: Projet name
   name: PROJECT_NAMESPACE
   value: knt-sonarqube
+- description: The project namespece prefix
+  displayName: GUID
+  name: GUID
+  value: dsk
