@@ -207,7 +207,7 @@ podTemplate(
         echo "Tagging for production mlbparks:${prodTag}"
 
         // Tag the built image with the production tag.
-        openshiftTag alias: 'false', destStream: 'mlbparks', destTag: "${prodTag}", destinationNamespace: '${GUID}-parks-dev', namespace: '${GUID}-parks-dev', srcStream: 'mlbparks', srcTag:  "${devTag}", verbose: 'false'
+        openshiftTag alias: 'false', destStream: 'mlbparks', destTag: "${prodTag}", destinationNamespace: "${GUID}-parks-dev", namespace: "${GUID}-parks-dev", srcStream: 'mlbparks', srcTag:  "${devTag}", verbose: 'false'
 
     }
 
@@ -222,26 +222,26 @@ podTemplate(
         
           def destApp   = ""
           def activeApp = ""
-            // your project names
-            def appgreen = sh(returnStdout: true, script: "oc get svc mlbparks-green -n dsk-parks-prod -o jsonpath='{ .metadata.name }'").trim()
-            def appbue = sh(returnStdout: true, script: "oc get svc mlbparks-blue -n dsk-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          // your project names
+          def appgreen = sh(returnStdout: true, script: "oc get svc mlbparks-green -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
+          def appbue = sh(returnStdout: true, script: "oc get svc mlbparks-blue -n ${GUID}-parks-prod -o jsonpath='{ .metadata.name }'").trim()
 
 
-            //activeApp = sh(returnStdout: true, script: "oc get route tasks -n ${GUID}-parks-prod -o jsonpath='{ .spec.to.name }'").trim()
-            if (appgreen == "mlbparks-green") { 
-              destApp = "mlbparks-blue"
-              activeApp = "mlbparks-green"
-            } else {
-              destApp = "mlbparks-green"
-              activeApp = "mlbparks-blue"
-            }
+          //activeApp = sh(returnStdout: true, script: "oc get route tasks -n ${GUID}-parks-prod -o jsonpath='{ .spec.to.name }'").trim()
+          if (appgreen == "mlbparks-green") { 
+            destApp = "mlbparks-blue"
+            activeApp = "mlbparks-green"
+          } else {
+            destApp = "mlbparks-green"
+            activeApp = "mlbparks-blue"
+          }
             
-            echo "Active Application:      " + activeApp
-            echo "Destination Application: " + destApp
+          echo "Active Application:      " + activeApp
+          echo "Destination Application: " + destApp
 
 
       //     // Update the Image on the Production Deployment Config
-      //   sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/dk-tasks-dev/tasks:${prodTag} -n sdk-tasks-prod"
+         sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/dk-tasks-dev/tasks:${prodTag} -n sdk-tasks-prod"
 
 
            // Update the Config Map which contains the users for the Tasks application
