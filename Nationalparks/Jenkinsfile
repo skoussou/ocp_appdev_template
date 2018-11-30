@@ -16,9 +16,6 @@ podTemplate(
     echo "GUID: ${GUID}"
     echo "CLUSTER: ${CLUSTER}"
 
-    echo "GUID: ${GUID}"
-    echo "CLUSTER: ${CLUSTER}"
-
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     def nexusMavenPublicRepoURL = "http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/maven-all-public"
 
