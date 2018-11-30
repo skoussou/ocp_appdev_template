@@ -16,9 +16,10 @@ objects:
         uri: https://github.com/skoussou/ocp_appdev_template.git
       sourceSecret:
         name: github-secret
+      contextDir: ${CONTEXT_DIR}
     strategy:
       jenkinsPipelineStrategy:
-        jenkinsfilePath: ${CONTEXT_DIR}/Jenkinsfile
+        jenkinsfilePath: Jenkinsfile
         env:
         - name: "GUID"
           value: ${GUID}

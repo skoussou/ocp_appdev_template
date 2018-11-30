@@ -46,9 +46,15 @@ echo "##########################################################################
 
 # oc import-image openshift/jenkins-agent-maven-35-centos7:v3.11 --from=docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11 --confirm -n $GUID-jenkins
 
-oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
+# NOTE: This agent pod if it is to be configured INSIDE JENKINGS
+#oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
+#      USER root\nRUN yum -y install skopeo && yum clean all\n
+#      USER 1001' --name=jenkins-agent-appdev -n $GUID-jenkins
+
+# NOTE: This slave pod if it is to be delegated to a new pod
+oc new-build  -D $'FROM docker.io/openshift/jenkins-slave-maven-centos7:v3.11\n
       USER root\nRUN yum -y install skopeo && yum clean all\n
-      USER 1001' --name=jenkins-agent-appdev -n $GUID-jenkins
+      USER 1001' --name=jenkins-slave-appdev -n dsk-jenkins
 
 echo 
 echo "##########################################################################################################################################"
