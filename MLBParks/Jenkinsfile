@@ -160,7 +160,7 @@ podTemplate(
            // PIPELINE SYNTAX: openshiftBuild apiURL: '', authToken: '', bldCfg: 'tasks', buildName: '', checkForTriggeredDeployments: 'false', commitID: '', env: [[name: 'from-file', value: 'http://nexus3-sdk-nexus.apps.fab.example.opentlc.com/repository/maven-releases/org/jboss/quickstarts/eap/tasks/1.0-0/tasks-1.0-0.war']], namespace: '', showBuildLogs: 'false', verbose: 'false', waitTime: '', waitUnit: 'sec'
 
            // DUE to s2I the image is in the target folder
-           sh "oc start-build tasks --follow --from-file=./target/mlbparks.war -n ${GUID}-parks-dev"
+           sh "oc start-build mlbparks --follow --from-file=./target/mlbparks.war -n ${GUID}-parks-dev"
            //sh "oc start-build tasks --follow --from-file=http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/maven-releases/org/jboss/quickstarts/eap/tasks/${version}/tasks-${version}.war -n sdk-tasks-dev"
 
           // Tag the image using the devTag (really this is RELEASE tag this way we avoid seeing LATEST everywhere eg. DC and hence we can quickly see POM in prod, JENKINS BUILD Job when debugging)
