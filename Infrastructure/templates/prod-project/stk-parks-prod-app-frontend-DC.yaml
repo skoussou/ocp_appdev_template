@@ -31,7 +31,7 @@ objects:
               configMapKeyRef:
                 key: APPNAME
                 name: ${APPLICATION_NAME}-${COLOR}-config
-          image: docker-registry.default.svc:5000/${GUID}-parks-dev/${APPLICATION_NAME}:0.0
+          image: docker-registry.default.svc:5000/${GUID}-parks-dev/${APPLICATION_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${APPLICATION_NAME}-${COLOR}
           livenessProbe:
