@@ -185,8 +185,8 @@ podTemplate(
     stage('Integration Tests') {
         dir ('MLBParks') {  
             echo "Integration Test against MLBarks Route"
-            def routeUrl = "http://mlbparks-${GUID}-parks-dev.${CLUSTER}/ws/healthz/"
-            def response = sh(returnStdout: true, script: "curl -s -X GET ${routeUrl}").trim()
+            def routeUrl = "http://mlbparks-${GUID}-parks-dev.apps.${CLUSTER}/ws/healthz/"
+            def response = sh(returnStdout: true, script: "curl -X GET ${routeUrl}").trim()
             echo "############################ INTEGRATION TESTS RESULT ##################################"
             echo "                               ${response}                                              "
             echo "############################ INTEGRATION TESTS RESULT ##################################"
