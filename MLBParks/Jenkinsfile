@@ -73,7 +73,7 @@ podTemplate(
             echo "---------------------------------------------------"
             groupId    = getGroupIdFromPom("pom.xml")
             artifactId = getArtifactIdFromPom("pom.xml")
-            version    = getVersionFromPom("pom.
+            version    = getVersionFromPom("pom.xml")
             devTag  = "${version}-${BUILD_NUMBER}"
             prodTag = "${version}" 
             echo "   "
