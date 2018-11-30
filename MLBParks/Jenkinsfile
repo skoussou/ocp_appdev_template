@@ -3,6 +3,7 @@ podTemplate(
   label: "skopeo-pod",
   cloud: "openshift",
   inheritFrom: "maven",
+  podRetention: "always()",
   containers: [
     containerTemplate(
       name: "jnlp",
@@ -47,17 +48,7 @@ podTemplate(
         echo 'Download Ocp_appdev_template MLBParks'
         git branch: "master", credentialsId: '${GUID}-jenkins-github-secret', url : 'https://github.com/skoussou/ocp_appdev_template.git'
 
-        echo "checking downloaded directories"
-            dir ('MLBParks') {
-            sh "ls"
-        }
-    }   
-
-    // Using Maven build the war file
-    // Do not run tests in this step
-    stage('Build war') {
-
-
+        echo "assigning GAV variables"
         dir ('MLBParks') {
             echo "   "
             echo "   "
@@ -80,7 +71,7 @@ podTemplate(
             echo "   "
             echo "   "
             echo "---------------------------------------------------"
-            echo "       VARIABLES BEFORE ASSIGNMENT                 "
+            echo "       VARIABLES AFTER ASSIGNMENT                 "
             echo "---------------------------------------------------"
             echo " groupId ==> ${groupId}"
             echo " artifactId ==> ${artifactId}"
@@ -88,14 +79,52 @@ podTemplate(
             echo " devTag ==> ${devTag}"
             echo " prodTag ==> ${prodTag}"
             echo "---------------------------------------------------"
+        }
+    }   
 
+    // Using Maven build the war file
+    // Do not run tests in this step
+    stage('Build war') {
+
+        dir ('MLBParks') {
 	         // Build, package and test with custom settings.xml pointing to corporate NEXUS
-             sh "ls"
              echo "Building version ${version}"
              echo "Building command --> [sh ${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}]"
              sh "${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}"
         }
     }
+
+
+    // Execute the following tests in parallel and present the results in the build log:
+    // - Unit tests
+    // - Code coverage tests
+
+    stage('Parallel Unit & Coverage Steps') {
+      steps {
+        parallel(
+          a: {
+            echo "Running Unit Tests"
+            sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"" 
+          },
+          b: {
+            echo "Running Code Analysis"
+            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+          }
+        )
+      }
+    }
+
+    // Using Maven run the unit tests
+    //stage('Unit Tests') {
+    //        echo "Running Unit Tests"
+    //        sh "${mvnCmd} test"
+    //}
+
+    // Using Maven call SonarQube for Code Analysis
+    //stage('Code Analysis') {
+    //        echo "Running Code Analysis"
+    //        sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-sdk-sonarqube.apps.fab.example.opentlc.com -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+    //}
 
  
   }
