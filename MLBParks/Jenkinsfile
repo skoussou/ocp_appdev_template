@@ -193,14 +193,6 @@ podTemplate(
         }
     }
 
-
-
-
-        def jsonSlurper = new JsonSlurper()
-def data = jsonSlurper.parseText("${response}")
-
- 
-  }
 }
 
 // Convenience Functions to read variables from the pom.xml
