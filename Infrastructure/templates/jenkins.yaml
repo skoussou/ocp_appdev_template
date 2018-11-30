@@ -112,9 +112,10 @@ objects:
           resources:
             limits:
               cpu: "2"
-              memory: 2Gi
+              memory: 4Gi
             requests:
               cpu: "1"
+              memory: 3GI
           securityContext:
             capabilities: {}
             privileged: false
