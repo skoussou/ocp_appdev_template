@@ -19,6 +19,24 @@ podTemplate(
     def mvnCmd = "mvn -s ../nexus_settings.xml"
     def nexusMavenPublicRepoURL = "http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/maven-all-public"
 
+    // The following variables need to be defined at the top level
+    // and not inside the scope of a stage - otherwise they would not
+    // be accessible from other stages.
+    // Extract version and other properties from the pom.xml
+    //def groupId    = getGroupIdFromPom("pom.xml")
+    //def artifactId = getArtifactIdFromPom("pom.xml")
+    //def version    = getVersionFromPom("pom.xml")
+    def groupId    = "tbd"
+    def artifactId = "tbd"
+    def version    = "tbd"
+
+    // Set the tag for the development image: version + build number
+    // def devTag  = "${version}-${BUILD_NUMBER}"
+    def devTag  = "tbd"
+    // Set the tag for the production image: version
+    // def prodTag = "${version}"  
+    def prodTag = "tbd"
+
     // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
     // You need to build the application in directory `MLBParks`.
     // Also copy "../nexus_settings.xml" to your build directory
@@ -38,20 +56,39 @@ podTemplate(
     // Using Maven build the war file
     // Do not run tests in this step
     stage('Build war') {
-        // The following variables need to be defined at the top level
-        // and not inside the scope of a stage - otherwise they would not
-        // be accessible from other stages.
-        // Extract version and other properties from the pom.xml
-        def groupId    = getGroupIdFromPom("pom.xml")
-        def artifactId = getArtifactIdFromPom("pom.xml")
-        def version    = getVersionFromPom("pom.xml")
 
-        // Set the tag for the development image: version + build number
-        def devTag  = "${version}-${BUILD_NUMBER}"
-        // Set the tag for the production image: version
-        def prodTag = "${version}" 
 
         dir ('MLBParks') {
+            echo "   "
+            echo "   "
+            echo "   "
+            echo "---------------------------------------------------"
+            echo "       VARIABLES BEFORE ASSIGNMENT                 "
+            echo "---------------------------------------------------"
+            echo " groupId ==> ${groupId}"
+            echo " artifactId ==> ${artifactId}"
+            echo " version ==> ${version}"
+            echo " devTag ==> ${devTag}"
+            echo " prodTag ==> ${prodTag}"
+            echo "---------------------------------------------------"
+            groupId    = getGroupIdFromPom("pom.xml")
+            artifactId = getArtifactIdFromPom("pom.xml")
+            version    = getVersionFromPom("pom.
+            devTag  = "${version}-${BUILD_NUMBER}"
+            prodTag = "${version}" 
+            echo "   "
+            echo "   "
+            echo "   "
+            echo "---------------------------------------------------"
+            echo "       VARIABLES BEFORE ASSIGNMENT                 "
+            echo "---------------------------------------------------"
+            echo " groupId ==> ${groupId}"
+            echo " artifactId ==> ${artifactId}"
+            echo " version ==> ${version}"
+            echo " devTag ==> ${devTag}"
+            echo " prodTag ==> ${prodTag}"
+            echo "---------------------------------------------------"
+
 	         // Build, package and test with custom settings.xml pointing to corporate NEXUS
              sh "ls"
              echo "Building version ${version}"
