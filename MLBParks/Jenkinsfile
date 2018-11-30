@@ -241,7 +241,7 @@ podTemplate(
 
 
       //     // Update the Image on the Production Deployment Config
-         sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/dk-tasks-dev/tasks:${prodTag} -n sdk-tasks-prod"
+         sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/${GUID}-parks-dev/tasks:${prodTag} -n ${GUID}-parks-prod"
 
 
            // Update the Config Map which contains the users for the Tasks application
