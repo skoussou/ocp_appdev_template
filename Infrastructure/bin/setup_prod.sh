@@ -99,7 +99,7 @@ spec:
             memory: 1Gi
         env:
           - name: MONGODB_DATABASE
-            value: "mongodb"
+            value: "parks"
           - name: MONGODB_USER
             value: "mongodb"
           - name: MONGODB_PASSWORD
