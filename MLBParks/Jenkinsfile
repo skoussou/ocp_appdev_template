@@ -98,7 +98,7 @@ podTemplate(
     // Execute the following tests in parallel and present the results in the build log:
     // - Unit tests
     // - Code coverage tests
-
+/*  TODO - BRING BACK
     stage('Parallel Unit & Coverage Steps') {
     parallel 'UnitTests': {
         stage('UnitTests') {
@@ -118,6 +118,8 @@ podTemplate(
         }
     }
     }
+*/
+
 
   /*  stage('Parallel Unit & Coverage Steps') {
       steps {
@@ -145,6 +147,7 @@ podTemplate(
     //        echo "Running Code Analysis"
     //        sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-sdk-sonarqube.apps.fab.example.opentlc.com -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
     //}
+
 
     // Build the OpenShift Image in OpenShift and tag it.
     stage('Build and Tag OpenShift Image') {
