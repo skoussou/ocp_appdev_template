@@ -4,6 +4,7 @@ podTemplate(
   cloud: "openshift",
   inheritFrom: "maven",
   podRetention: "always()",
+  namespace: "dsk-jenkins",
   containers: [
     containerTemplate(
       name: "jnlp",
