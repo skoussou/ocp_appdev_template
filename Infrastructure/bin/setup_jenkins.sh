@@ -54,7 +54,7 @@ echo "##########################################################################
 # NOTE: This slave pod if it is to be delegated to a new pod
 oc new-build  -D $'FROM docker.io/openshift/jenkins-slave-maven-centos7:v3.11\n
       USER root\nRUN yum -y install skopeo && yum clean all\n
-      USER 1001' --name=jenkins-slave-appdev -n dsk-jenkins
+      USER 1001' --name=jenkins-slave-appdev -n $GUID-jenkins
 
 echo 
 echo "##########################################################################################################################################"
