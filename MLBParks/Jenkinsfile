@@ -84,7 +84,7 @@ podTemplate(
 
     // Using Maven build the war file
     // Do not run tests in this step
-    stage('Build war') {
+  /*  stage('Build war') {
 
         dir ('MLBParks') {
 	         // Build, package and test with custom settings.xml pointing to corporate NEXUS
@@ -93,13 +93,29 @@ podTemplate(
              sh "${mvnCmd} clean package -DskipTests -DURL=${nexusMavenPublicRepoURL}"
         }
     }
-
+*/
 
     // Execute the following tests in parallel and present the results in the build log:
     // - Unit tests
     // - Code coverage tests
 
     stage('Parallel Unit & Coverage Steps') {
+    parallel 'UnitTests': {
+        stage('UnitTests') {
+            /* .. Your code/scripts .. */
+            echo "Running Unit Tests"
+            sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"
+        }
+    }, 'CoverageTests': {
+        stage('CoverageTests') {
+            /* .. Your code/scripts .. */
+            echo "Running Code Analysis"
+            sh "${mvnCmd} sonar:sonar -DURL=${nexusMavenPublicRepoURL} -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+        }
+    }
+}
+
+  /*  stage('Parallel Unit & Coverage Steps') {
       steps {
         parallel(
           a: {
@@ -112,7 +128,7 @@ podTemplate(
           }
         )
       }
-    }
+    }*/
 
     // Using Maven run the unit tests
     //stage('Unit Tests') {
