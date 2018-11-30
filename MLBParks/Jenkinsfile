@@ -3,7 +3,7 @@ podTemplate(
   label: "skopeo-pod",
   cloud: "openshift",
   inheritFrom: "maven",
-  podRetention: "always()",
+  //podRetention: "always()",
   containers: [
     containerTemplate(
       name: "jnlp",
@@ -102,15 +102,19 @@ podTemplate(
     stage('Parallel Unit & Coverage Steps') {
     parallel 'UnitTests': {
         stage('UnitTests') {
-            /* .. Your code/scripts .. */
-            echo "Running Unit Tests"
-            sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"
+            dir ('MLBParks') {  
+                /* .. Your code/scripts .. */
+                echo "Running Unit Tests"
+                sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"
+            }
         }
     }, 'CoverageTests': {
         stage('CoverageTests') {
-            /* .. Your code/scripts .. */
-            echo "Running Code Analysis"
-            sh "${mvnCmd} sonar:sonar -DURL=${nexusMavenPublicRepoURL} -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+            dir ('MLBParks') {  
+                /* .. Your code/scripts .. */
+                echo "Running Code Analysis"
+                sh "${mvnCmd} sonar:sonar -DURL=${nexusMavenPublicRepoURL} -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+            }
         }
     }
 }
