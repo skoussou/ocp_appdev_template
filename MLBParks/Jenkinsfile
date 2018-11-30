@@ -104,11 +104,11 @@ podTemplate(
         parallel(
           a: {
             echo "Running Unit Tests"
-            sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"" 
+            sh "${mvnCmd} test -DURL=${nexusMavenPublicRepoURL}"
           },
           b: {
             echo "Running Code Analysis"
-            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+            sh "${mvnCmd} sonar:sonar -DURL=${nexusMavenPublicRepoURL} -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
           }
         )
       }
