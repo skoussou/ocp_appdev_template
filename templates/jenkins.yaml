@@ -1,0 +1,229 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: sdk-jenkins
+objects:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"jenkins"}}'
+    creationTimestamp: null
+    labels:
+      app: jenkins
+      template: jenkins-persistent-template
+    name: jenkins
+- apiVersion: v1
+  data:
+    password: NDA0a2VyYXRlYTIwMTE=
+    username: c2tvdXNzb3U=
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: github-secret
+  type: Opaque
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: jenkins
+    name: jenkins
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 4Gi
+  status: {}
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      template.alpha.openshift.io/wait-for-ready: "true"
+    creationTimestamp: null
+    generation: 6
+    labels:
+      app: jenkins
+    name: jenkins
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      name: jenkins
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: jenkins
+          name: jenkins
+      spec:
+        containers:
+        - env:
+          - name: OPENSHIFT_ENABLE_OAUTH
+            value: "true"
+          - name: OPENSHIFT_ENABLE_REDIRECT_PROMPT
+            value: "true"
+          - name: DISABLE_ADMINISTRATIVE_MONITORS
+            value: "true"
+          - name: KUBERNETES_MASTER
+            value: https://kubernetes.default:443
+          - name: KUBERNETES_TRUST_CERTIFICATES
+            value: "true"
+          - name: JENKINS_SERVICE_NAME
+            value: jenkins
+          - name: JNLP_SERVICE_NAME
+            value: jenkins-jnlp
+          - name: ENABLE_FATAL_ERROR_LOG_FILE
+            value: "false"
+          image: docker-registry.default.svc:5000/openshift/jenkins:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /login
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            successThreshold: 1
+            timeoutSeconds: 240
+          name: jenkins
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /login
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 240
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 3Gi
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/jenkins
+            name: jenkins-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: jenkins
+        serviceAccountName: jenkins
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
+            claimName: jenkins
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - jenkins
+        from:
+          kind: ImageStreamTag
+          name: jenkins:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/timeout: 4m
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/host.generated: "true"
+      template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}
+    creationTimestamp: null
+    labels:
+      app: jenkins
+    name: jenkins
+  spec:
+    host: ${APPLICATION_NAME}-${GUID}-jenkins.${APPS_CLUSTER_HOSTNAME}
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: jenkins
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/dependencies: '[{"name": "jenkins-jnlp", "namespace":
+        "", "kind": "Service"}]'
+      service.openshift.io/infrastructure: "true"
+    creationTimestamp: null
+    labels:
+      app: jenkins
+    name: jenkins
+  spec:
+    ports:
+    - name: web
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      name: jenkins
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: jenkins
+    name: jenkins-jnlp
+  spec:
+    ports:
+    - name: agent
+      port: 50000
+      protocol: TCP
+      targetPort: 50000
+    selector:
+      name: jenkins
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+parameters:
+- description: The application name, selector and label for this project.
+  displayName: Nexus Application name used for selector and label
+  name: APPLICATION_NAME
+  value: jenkins
+- description: The unique GUID for the OpenShift Service exposed for the Nexus container.
+  displayName: Nexus Service GUID Service Name
+  name: GUID
+  value: stk
+- description: The project namespece the application is deployed in
+  displayName: Projet name
+  name: PROJECT_NAMESPACE
+  value: stk-jenkins
+- description: The hostname for ocp cluster (eg. apps.na39.openshift.opentlc.com)
+  displayName: Cluster Hostname
+  name: APPS_CLUSTER_HOSTNAME
+  value: apps.na39.openshift.opentlc.com

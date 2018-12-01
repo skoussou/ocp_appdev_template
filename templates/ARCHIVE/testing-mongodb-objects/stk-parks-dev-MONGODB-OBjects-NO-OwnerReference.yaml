@@ -1,0 +1,243 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: stk-parks-dev
+objects:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      template: mongodb-persistent-template
+    name: mongodb
+  spec:
+    replicas: 1
+    selector:
+      name: mongodb
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: mongodb
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: mongodb
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: mongodb
+          - name: MONGODB_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-admin-password
+                name: mongodb
+          - name: MONGODB_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: mongodb
+          image: registry.access.redhat.com/rhscl/mongodb-32-rhel7@sha256:58ad73c16aca6c8c1eafcb670d4b692c79ddcb31a3d98814e3fe7498c5702510
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 27017
+            timeoutSeconds: 1
+          name: mongodb
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                --eval="quit()"
+            failureThreshold: 3
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 512Mi
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mongodb/data
+            name: mongodb-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mongodb
+        from:
+          kind: ImageStreamTag
+          name: mongodb:3.2
+          namespace: openshift
+        lastTriggeredImage: registry.access.redhat.com/rhscl/mongodb-32-rhel7@sha256:58ad73c16aca6c8c1eafcb670d4b692c79ddcb31a3d98814e3fe7498c5702510
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: mongodb://{.spec.clusterIP}:{.spec.ports[?(.name=="mongo")].port}
+    creationTimestamp: null
+    labels:
+      template: mongodb-persistent-template
+    name: mongodb
+  spec:
+    ports:
+    - name: mongo
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      name: mongodb
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+    creationTimestamp: null
+    labels:
+      template: mongodb-persistent-template
+    name: mongodb
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi
+    volumeName: vol180
+  status: {}
+- apiVersion: v1
+  data:
+    DATABASE_SERVICE_NAME: bW9uZ29kYg==
+    MEMORY_LIMIT: NTEyTWk=
+    MONGODB_ADMIN_PASSWORD: bW9uZ29kYg==
+    MONGODB_DATABASE: cGFya3M=
+    MONGODB_PASSWORD: bW9uZ29kYg==
+    MONGODB_USER: bW9uZ29kYg==
+    MONGODB_VERSION: My4y
+    NAMESPACE: b3BlbnNoaWZ0
+    VOLUME_CAPACITY: MUdp
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: 216ffe0c-b706-437b-9730-903f284c7370
+  type: Opaque
+- apiVersion: v1
+  data:
+    database-admin-password: bW9uZ29kYg==
+    database-name: cGFya3M=
+    database-password: bW9uZ29kYg==
+    database-user: bW9uZ29kYg==
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-admin_password: '{.data[''database-admin-password'']}'
+      template.openshift.io/expose-database_name: '{.data[''database-name'']}'
+      template.openshift.io/expose-password: '{.data[''database-password'']}'
+      template.openshift.io/expose-username: '{.data[''database-user'']}'
+    creationTimestamp: null
+    labels:
+      template: mongodb-persistent-template
+    name: mongodb
+  type: Opaque
+- apiVersion: v1
+  data:
+    APPNAME: MLB Parks (Dev)
+    DB_HOST: mongodb
+    DB_NAME: parks
+    DB_PASSWORD: mongodb
+    DB_PORT: "27017"
+    DB_USERNAME: mongodb
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: mlbparks
+    name: mlbparks-config
+- apiVersion: v1
+  data:
+    APPNAME: National Parks (Dev)
+    DB_HOST: mongodb
+    DB_NAME: parks
+    DB_PASSWORD: mongodb
+    DB_PORT: "27017"
+    DB_USERNAME: mongodb
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: nationalparks
+    name: nationalparks-config
+- apiVersion: v1
+  data:
+    APPNAME: ParksMap (Dev)
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: parksmap
+    name: parksmap-config
+- apiVersion: v1
+  data:
+    admin_password: bW9uZ29kYg==
+    database_name: cGFya3M=
+    password: bW9uZ29kYg==
+    uri: bW9uZ29kYjovLzE3Mi4zMC4xNDEuNjY6MjcwMTc=
+    username: bW9uZ29kYg==
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: mongodb-persistent-lbdwd-credentials-zx9lw
+  type: Opaque
+- apiVersion: v1
+  data:
+    parameters: eyJEQVRBQkFTRV9TRVJWSUNFX05BTUUiOiJtb25nb2RiIiwiTUVNT1JZX0xJTUlUIjoiNTEyTWkiLCJNT05HT0RCX0FETUlOX1BBU1NXT1JEIjoibW9uZ29kYiIsIk1PTkdPREJfREFUQUJBU0UiOiJwYXJrcyIsIk1PTkdPREJfUEFTU1dPUkQiOiJtb25nb2RiIiwiTU9OR09EQl9VU0VSIjoibW9uZ29kYiIsIk1PTkdPREJfVkVSU0lPTiI6IjMuMiIsIk5BTUVTUEFDRSI6Im9wZW5zaGlmdCIsIlZPTFVNRV9DQVBBQ0lUWSI6IjFHaSJ9
+  kind: Secret
+  metadata:
+    name: mongodb-persistent-parameters6h401
+  type: Opaque

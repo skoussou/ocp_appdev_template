@@ -1,0 +1,32 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: jenkins-agent-appdev
+  name: jenkins-agent-appdev
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: jenkins-agent-appdev:latest
+  source:
+    dockerfile: |-
+      FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11
+
+            USER root
+      RUN yum -y install skopeo && yum clean all
+
+            USER 1001
+    type: Dockerfile
+  strategy:
+    dockerStrategy:
+      from:
+        kind: ImageStreamTag
+        name: jenkins-agent-maven-35-centos7:v3.11
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - type: ConfigChange
+  - imageChange:
+    from: docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11
+    type: ImageChange
