@@ -198,7 +198,7 @@ podTemplate(
 
               echo "Create SVC for dest app [${destApp}] and label it app=parksmap && type=parksmap-backend"
               echo "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod"
-              sh "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod  --dry-run=true -o yaml"
+              //sh "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod  --dry-run=true -o yaml"
          
               sh "oc expose dc ${destApp} --port=8080 -l app=parksmap,type=parksmap-backend -n ${GUID}-parks-prod"
 
