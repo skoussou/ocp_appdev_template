@@ -3,6 +3,7 @@ podTemplate(
   label: "skopeo-pod",
   cloud: "openshift",
   inheritFrom: "maven",
+  namespace: "${GUID}-jenkins",
   containers: [
     containerTemplate(
       name: "jnlp",
