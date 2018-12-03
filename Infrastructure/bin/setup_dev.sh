@@ -31,7 +31,7 @@ while : ; do
   echo "Checking if mongodb is Ready..."
   #oc get pod -n ${GUID}-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
   #oc get pod -n ${GUID}-parks-dev|grep 'mongodb-.*-deploy'|grep -v deploy|grep "1/1"
-  oc get pod -n dsk-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
+  oc get pod -n ${GUID}-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
   [[ "$?" == "1" ]] || break
   echo "...no. Sleeping 10 seconds."
   sleep 10
