@@ -45,7 +45,7 @@ spec:
     - name: mongodb
       port: 27017
   selector: 
-    name: "mongodb"' | oc create -f -
+    name: "mongodb"' | oc create -f - -n ${GUID}-parks-prod
 
 
 
@@ -58,7 +58,7 @@ spec:
     - name: "mongodb"
       port: 27017
   selector:
-    name: mongodb' | oc create -f -
+    name: mongodb' | oc create -f - -n ${GUID}-parks-prod
 
 
 
@@ -132,7 +132,7 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 2Gi' | oc create -f -
+          storage: 2Gi' | oc create -f - -n ${GUID}-parks-prod
 
 echo
 echo
@@ -249,6 +249,6 @@ echo " TODO: SERVICE required"
 # oc process -f ../templates/prod-project/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f -
 
 echo " TODO: ROUTE required"
-oc process -f ../templates/prod-project/stk-parks-prod-app-frontend-ROUTE.yaml -p=ROUTE_NAME=parksmap -p=SERVICE_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=na39.openshift.opentlc.com -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
+oc process -f ../templates/prod-project/stk-parks-prod-app-frontend-ROUTE.yaml -p=ROUTE_NAME=parksmap -p=SERVICE_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=$CLUSTER -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
 
 echo "#################################################################################################"
