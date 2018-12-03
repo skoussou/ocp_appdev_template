@@ -53,7 +53,7 @@ while : ; do
   #oc get pod -n ${GUID}-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
   #oc get pod -n ${GUID}-parks-dev|grep 'mongodb-.*-deploy'|grep -v deploy|grep "1/1"
   
-  oc get is -n dsk-jenkins|grep 'jenkins-slave-appdev'|grep "latest"
+  oc get is -n ${GUID}-jenkins|grep 'jenkins-slave-appdev'|grep "latest"
 
   [[ "$?" == "1" ]] || break
   echo "...no. Sleeping 10 seconds."
