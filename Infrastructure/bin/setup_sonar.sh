@@ -40,5 +40,5 @@ echo
 echo "#####################################################################"
 echo "creating app APPLICATION_NAME=sonarqube in $GUID-sonarqube"
 echo "#####################################################################"
-oc new-app -f ../templates/sonarqube.yaml -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-sonarqube -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -n $GUID-sonarqube
-
+#oc new-app -f ../templates/sonarqube.yaml -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-sonarqube -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -n $GUID-sonarqube
+oc new-app -f ../templates/sonarqube.yaml -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-sonarqube -p APPS_CLUSTER_HOSTNAME=$CLUSTER -n $GUID-sonarqube

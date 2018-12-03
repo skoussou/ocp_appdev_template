@@ -267,7 +267,7 @@ objects:
       app: sonarqube
     name: sonarqube
   spec:
-    host: sonarqube-${GUID}-sonarqube.${APPS_CLUSTER_HOSTNAME}
+    host: sonarqube-${GUID}-sonarqube.apps.${APPS_CLUSTER_HOSTNAME}
     port:
       targetPort: 9000
     to:
