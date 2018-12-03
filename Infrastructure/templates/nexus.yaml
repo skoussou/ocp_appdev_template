@@ -112,7 +112,7 @@ objects:
       app: ${APPLICATION_NAME}
     name: nexus-registry
   spec:
-    host: nexus-registry-${PROJECT_NAMESPACE}.${APPS_CLUSTER_HOSTNAME}
+    host: nexus-registry-${PROJECT_NAMESPACE}.apps.${APPS_CLUSTER_HOSTNAME}
     port:
       targetPort: 5000-tcp
     tls:
