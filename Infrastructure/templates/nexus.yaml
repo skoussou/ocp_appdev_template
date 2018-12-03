@@ -133,7 +133,7 @@ objects:
       app: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}
   spec:
-    host: ${APPLICATION_NAME}-${PROJECT_NAMESPACE}.${APPS_CLUSTER_HOSTNAME}
+    host: ${APPLICATION_NAME}-${PROJECT_NAMESPACE}.apps.${APPS_CLUSTER_HOSTNAME}
     port:
       targetPort: 8081-tcp
     to:
