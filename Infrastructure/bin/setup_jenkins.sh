@@ -29,22 +29,11 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 # To be Implemented by Student
 echo
 echo
-echo "#######################################################################################################"
-echo "creating app APPLICATION_NAME=jenkins with persistent storage and sufficient resources in $GUID-jenkins"
-echo "#######################################################################################################"
-echo GUID=$GUID
-echo REPO=$REPO
-echo CLUSTER=$CLUSTER
-oc new-app -f ../templates/jenkins.yaml -p APPLICATION_NAME=jenkins -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-jenkins -p APPS_CLUSTER_HOSTNAME=apps.$CLUSTER -n $GUID-jenkins
-
-
-echo
-echo
 echo "##########################################################################################################################################"
 echo "Create a build configuration to build the custom Maven slave pod to include Skopeo from openshift/jenkins-agent-maven-35-centos7:v3.11 in $GUID-jenkins"
 echo "##########################################################################################################################################"
 
-# oc import-image openshift/jenkins-agent-maven-35-centos7:v3.11 --from=docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11 --confirm -n $GUID-jenkins
+#oc import-image openshift/jenkins-agent-maven-35-centos7:v3.11 --from=docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11 --confirm -n $GUID-jenkins
 
 # NOTE: This agent pod if it is to be configured INSIDE JENKINGS
 #oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
@@ -55,6 +44,48 @@ echo "##########################################################################
 oc new-build  -D $'FROM docker.io/openshift/jenkins-slave-maven-centos7:v3.11\n
       USER root\nRUN yum -y install skopeo && yum clean all\n
       USER 1001' --name=jenkins-slave-appdev -n $GUID-jenkins -l role=jenkins-slave
+
+echo
+echo "<----------------------------------------->"
+echo "Polling for jenkins slave image is ready"
+while : ; do
+  echo "Checking if jenkins slave image has been built..."
+  #oc get pod -n ${GUID}-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
+  #oc get pod -n ${GUID}-parks-dev|grep 'mongodb-.*-deploy'|grep -v deploy|grep "1/1"
+  
+  oc get is -n dsk-jenkins|grep 'jenkins-slave-appdev'|grep "latest"
+
+  [[ "$?" == "1" ]] || break
+  echo "...no. Sleeping 10 seconds."
+  sleep 10
+done
+#echo sleeping 15
+#sleep 15
+
+echo
+echo
+echo "#######################################################################################################"
+echo "creating app APPLICATION_NAME=jenkins with persistent storage and sufficient resources in $GUID-jenkins"
+echo "#######################################################################################################"
+echo GUID=$GUID
+echo REPO=$REPO
+echo CLUSTER=$CLUSTER
+oc new-app -f ../templates/jenkins.yaml -p APPLICATION_NAME=jenkins -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-jenkins -p APPS_CLUSTER_HOSTNAME=apps.$CLUSTER -n $GUID-jenkins
+
+echo
+echo "<----------------------------------------->"
+echo "Polling for jenkins to be ready"
+while : ; do
+  echo "Checking if jenkins is Ready..."
+  #oc get pod -n ${GUID}-parks-dev|grep '\-1\-'|grep -v deploy|grep "1/1"
+  #oc get pod -n ${GUID}-parks-dev|grep 'mongodb-.*-deploy'|grep -v deploy|grep "1/1"
+  oc get pod -n ${GUID}-jenkins|grep '\-1\-'|grep -v deploy|grep "1/1"
+  [[ "$?" == "1" ]] || break
+  echo "...no. Sleeping 10 seconds."
+  sleep 10
+done
+
+#sleep 20
 
 echo 
 echo "##########################################################################################################################################"
