@@ -69,7 +69,7 @@ while : ; do
   sleep 10
 done
 
-sleep 15s
+sleep 2s
 
 # annotate correctly the routes for console
 echo
@@ -77,8 +77,8 @@ echo
 echo "#####################################################################"
 echo "annotating routes"
 echo "#####################################################################"
-oc annotate route nexus3 console.alpha.openshift.io/overview-app-route=true --overwrite
-oc annotate route nexus-registry console.alpha.openshift.io/overview-app-route=false --overwrite
+oc annotate route nexus3 console.alpha.openshift.io/overview-app-route=true --overwrite -n $GUID-nexus
+oc annotate route nexus-registry console.alpha.openshift.io/overview-app-route=false --overwrite -n $GUID-nexus
 
 echo
 echo
