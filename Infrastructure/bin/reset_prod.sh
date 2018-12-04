@@ -18,17 +18,20 @@ echo "Resetting Parks Production Environment in project ${GUID}-parks-prod to Gr
 # rollout followed by a Green rollout.
 
 # To be Implemented by Student
-oc delete service mlbparks-green --ignore-not-found=true
-oc delete service mlbparks-blue --ignore-not-found=true
+oc delete service mlbparks-green --ignore-not-found=true  -n ${GUID}-parks-prod
+oc delete service mlbparks-blue --ignore-not-found=true -n ${GUID}-parks-prod
 
-oc delete service nationalparks-green --ignore-not-found=true
-oc delete service nationalparks-blue --ignore-not-found=true
+oc delete service nationalparks-green --ignore-not-found=true -n ${GUID}-parks-prod
+oc delete service nationalparks-blue --ignore-not-found=true -n ${GUID}-parks-prod
 
-oc delete service parksmap-green --ignore-not-found=true
-oc delete service parksmap-blue --ignore-not-found=true
+oc delete route parksmap  -n ${GUID}-parks-prod
+
+oc delete service parksmap-green --ignore-not-found=true -n ${GUID}-parks-prod
+oc delete service parksmap-blue --ignore-not-found=true -n ${GUID}-parks-prod
 
 oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=mlbparks-green -l app=mlbparks |oc create -f - -n ${GUID}-parks-prod
 oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=nationalparks-green -l app=nationalparks |oc create -f - -n ${GUID}-parks-prod
 oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-frontend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
 
-oc patch route/parksmap -p '{"spec":{"to":{"name":"parksmap-green"}}}' -n ${GUID}-parks-prod
+#oc patch route/parksmap -p '{"spec":{"to":{"name":"parksmap-green"}}}' -n ${GUID}-parks-prod
+oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-frontend-ROUTE.yaml -p=ROUTE_NAME=parksmap -p=SERVICE_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=$CLUSTER -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
