@@ -84,10 +84,10 @@ echo
 echo
 echo "#####################################################################"
 echo "Configuring NEXUS"
-echo "./Infrastructure/bin/templates/setup_nexus3.sh admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')"
+echo "./Infrastructure/bin/templates/setup_nexus3.sh admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}' -n dsk-nexus)"
 echo "#####################################################################"
 
 SCRIPT_PATH="./Infrastructure/bin/extras/configure_nexus3.sh"
 source "$SCRIPT_PATH"
-. "$SCRIPT_PATH" admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')
+. "$SCRIPT_PATH" admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}' -n dsk-nexus)
 
