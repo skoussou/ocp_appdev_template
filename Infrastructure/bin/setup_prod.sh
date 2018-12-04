@@ -179,17 +179,17 @@ echo "------------------------------------------------------------------------"
 # oc rollout resume dc mlbparks-blue
 # oc rollout resume dc mlbparks-green
 
-oc new-app -f ../templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p COLOR=blue -p APPNAME_LABEL="MLB Parks (Blue)" -l app=mlbparks -n ${GUID}-parks-prod
+oc new-app -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p COLOR=blue -p APPNAME_LABEL="MLB Parks (Blue)" -l app=mlbparks -n ${GUID}-parks-prod
 echo "------------------------------------------------------------------------"
-oc new-app -f ../templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p COLOR=green -p APPNAME_LABEL="MLB Parks (Green)" -l app=mlbparks -n ${GUID}-parks-prod
+oc new-app -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p COLOR=green -p APPNAME_LABEL="MLB Parks (Green)" -l app=mlbparks -n ${GUID}-parks-prod
 echo
 echo
 echo " TODO:	Make the [mlbparks-green] service active initially to guarantee a Blue rollout upon the first pipeline run"
 
-oc process -f ../templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=mlbparks-green -l app=mlbparks |oc create -f - -n ${GUID}-parks-prod
+oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=mlbparks-green -l app=mlbparks |oc create -f - -n ${GUID}-parks-prod
 # oc create service clusterip mlbparks-green --tcp=8080:8080
 # oc patch svc/mlbparks-green -p '{"metadata":{"labels":{"type":"parksmap-backend"}}}'
-# oc process -f ../templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=mlbparks-green -l app=mlbparks |oc create -f -
+# oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=mlbparks-green -l app=mlbparks |oc create -f -
 
 
 echo
@@ -206,21 +206,21 @@ echo "------------------------------------------------------------------------"
 echo " Microservice [nationalparks] Set up blue and green instances for [nationalparks] "
 echo "------------------------------------------------------------------------"
 
-oc new-app -f ../templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p COLOR=blue -p APPNAME_LABEL="National Parks (Blue)" -l app=nationalparks -n ${GUID}-parks-prod
+oc new-app -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p COLOR=blue -p APPNAME_LABEL="National Parks (Blue)" -l app=nationalparks -n ${GUID}-parks-prod
 echo "------------------------------------------------------------------------"
-oc new-app -f ../templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p COLOR=green -p APPNAME_LABEL="National Parks (Green)" -l app=nationalparks -n ${GUID}-parks-prod
+oc new-app -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p COLOR=green -p APPNAME_LABEL="National Parks (Green)" -l app=nationalparks -n ${GUID}-parks-prod
 
 echo
 echo
 echo
 echo " TODO:	Make the [mlbparks-green] service active initially to guarantee a Blue rollout upon the first pipeline run"
 
-oc process -f ../templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=nationalparks-green -l app=nationalparks |oc create -f - -n ${GUID}-parks-prod
+oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=nationalparks-green -l app=nationalparks |oc create -f - -n ${GUID}-parks-prod
 
 
 # oc create service clusterip mlbparks-green --tcp=8080:8080
 # oc patch svc/mlbparks-green -p '{"metadata":{"labels":{"type":"parksmap-backend"}}}'
-# oc process -f ../templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=nationalparks-green -l app=nationalparks |oc create -f -
+# oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=nationalparks-green -l app=nationalparks |oc create -f -
 
 echo
 echo
@@ -236,19 +236,19 @@ echo "------------------------------------------------------------------------"
 echo " Microservice [parksmap] Set up blue and green instances for [parksmap] "
 echo "------------------------------------------------------------------------"
 
-oc new-app -f ../templates/prodproject/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=blue -p APPNAME_LABEL="ParksMap (Blue)" -l app=parksmap -n ${GUID}-parks-prod
+oc new-app -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=blue -p APPNAME_LABEL="ParksMap (Blue)" -l app=parksmap -n ${GUID}-parks-prod
 echo "------------------------------------------------------------------------"
-oc new-app -f ../templates/prodproject/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=green -p APPNAME_LABEL="ParksMap (Green)" -l app=parksmap -n ${GUID}-parks-prod
+oc new-app -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-frontend-DC.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p COLOR=green -p APPNAME_LABEL="ParksMap (Green)" -l app=parksmap -n ${GUID}-parks-prod
 echo
 echo
 echo " TODO:	Make the [parksmap-green] service active initially to guarantee a Blue rollout upon the first pipeline run"
 
-oc process -f ../templates/prodproject/stk-parks-prod-app-frontend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
+oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-frontend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
 
 echo " TODO: SERVICE required"
-# oc process -f ../templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f -
+# oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-backend-SVC.yaml -p=DC_NAME=parksmap-green -l app=parksmap |oc create -f -
 
 echo " TODO: ROUTE required"
-oc process -f ../templates/prodproject/stk-parks-prod-app-frontend-ROUTE.yaml -p=ROUTE_NAME=parksmap -p=SERVICE_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=$CLUSTER -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
+oc process -f ./Infrastructure/templates/prodproject/stk-parks-prod-app-frontend-ROUTE.yaml -p=ROUTE_NAME=parksmap -p=SERVICE_NAME=parksmap-green -p=GUID=${GUID} -p=CLUSTER_NAME=$CLUSTER -l app=parksmap |oc create -f - -n ${GUID}-parks-prod
 
 echo "#################################################################################################"

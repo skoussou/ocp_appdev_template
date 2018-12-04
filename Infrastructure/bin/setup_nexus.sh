@@ -26,7 +26,7 @@ echo "Setting up Nexus in project $GUID-nexus"
 # done
 
 # Ideally just calls a template
-# oc new-app -f ../templates/nexus.yaml --param .....
+# oc new-app -f ./Infrastructure/templates/nexus.yaml --param .....
 
 # To be Implemented by Student
 echo
@@ -42,7 +42,7 @@ echo
 echo
 echo "#####################################################################"
 echo "creating volume nexus-pvc for nexus3 in $GUID-nexus"
-oc create -f ../templates/nexus-pvc.yaml  -n $GUID-nexus
+oc create -f ./Infrastructure/templates/nexus-pvc.yaml  -n $GUID-nexus
 echo "#####################################################################"
 # 
 echo
@@ -50,8 +50,8 @@ echo
 echo "#####################################################################"
 echo "creating app APPLICATION_NAME=nexus3 in $GUID-nexus"
 echo "#####################################################################"
-#oc new-app -f ../templates/nexus.yaml -p APPLICATION_NAME=nexus3 -p PROJECT_NAMESPACE=$GUID-nexus -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -l app=nexus3 -n $GUID-nexus
-oc new-app -f ../templates/nexus.yaml -p APPLICATION_NAME=nexus3 -p PROJECT_NAMESPACE=$GUID-nexus -p APPS_CLUSTER_HOSTNAME=$CLUSTER -l app=nexus3 -n $GUID-nexus
+#oc new-app -f ./Infrastructure/templates/nexus.yaml -p APPLICATION_NAME=nexus3 -p PROJECT_NAMESPACE=$GUID-nexus -p APPS_CLUSTER_HOSTNAME=apps.na39.openshift.opentlc.com -l app=nexus3 -n $GUID-nexus
+oc new-app -f ./Infrastructure/templates/nexus.yaml -p APPLICATION_NAME=nexus3 -p PROJECT_NAMESPACE=$GUID-nexus -p APPS_CLUSTER_HOSTNAME=$CLUSTER -l app=nexus3 -n $GUID-nexus
 # add claim to DC
 # oc rollout pause dc nexus3
 # oc set volume dc/nexus3 --add --overwrite --name=nexus3-volume-1 --mount-path=/nexus-data/ --type persistentVolumeClaim --claim-name=nexus-pvc
@@ -82,7 +82,7 @@ echo
 echo
 echo "#####################################################################"
 echo "Configuring NEXUS"
-echo "../templates/setup_nexus3.sh admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')"
+echo "./Infrastructure/templates/setup_nexus3.sh admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')"
 echo "#####################################################################"
 
 SCRIPT_PATH="./extras/configure_nexus3.sh"

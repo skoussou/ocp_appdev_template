@@ -70,7 +70,7 @@ echo "##########################################################################
 echo GUID=$GUID
 echo REPO=$REPO
 echo CLUSTER=$CLUSTER
-oc new-app -f ../templates/jenkins.yaml -p APPLICATION_NAME=jenkins -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-jenkins -p APPS_CLUSTER_HOSTNAME=apps.$CLUSTER -n $GUID-jenkins
+oc new-app -f ./Infrastructure/templates/jenkins.yaml -p APPLICATION_NAME=jenkins -p GUID=$GUID -p PROJECT_NAMESPACE=$GUID-jenkins -p APPS_CLUSTER_HOSTNAME=apps.$CLUSTER -n $GUID-jenkins
 
 echo
 echo "<----------------------------------------->"
@@ -96,24 +96,24 @@ echo " DONE: BuildConfig for Pipeline for MLBParks"
 echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
 echo "   - contextDir: MLBParks"
 echo
-#oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=mlbparks -p CONTEXT_DIR=MLBParks -n stk-jenkin
-oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=mlbparks -p CONTEXT_DIR=MLBParks -n $GUID-jenkins
+#oc new-app -f ./Infrastructure/templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=mlbparks -p CONTEXT_DIR=MLBParks -n stk-jenkin
+oc new-app -f ./Infrastructure/templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=mlbparks -p CONTEXT_DIR=MLBParks -n $GUID-jenkins
 
 echo
 echo " DONE: BuildConfig for Pipeline for Nationalparks"
 echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
 echo "   - contextDir: Nationalparks"
 echo
-# oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=nationalparks -p CONTEXT_DIR=Nationalparks -n stk-jenkins
-oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=nationalparks -p CONTEXT_DIR=Nationalparks -n $GUID-jenkins
+# oc new-app -f ./Infrastructure/templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=nationalparks -p CONTEXT_DIR=Nationalparks -n stk-jenkins
+oc new-app -f ./Infrastructure/templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=nationalparks -p CONTEXT_DIR=Nationalparks -n $GUID-jenkins
 
 echo
 echo " DONE: BuildConfig for Pipeline for ParksMap"
 echo "   - Repository: https://github.com/skoussou/ocp_appdev_template"
 echo "   - contextDir: ParksMap"
 echo
-#oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=parksmap -p CONTEXT_DIR=ParksMap -n stk-jenkins
-oc new-app -f ../templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=parksmap -p CONTEXT_DIR=ParksMap -n $GUID-jenkins
+#oc new-app -f ./Infrastructure/templates/jenkins-bc-pipeline.yaml -p GUID=stk -p CLUSTER_NAME=na39.openshift.opentlc.com -p APPLICATION_NAME=parksmap -p CONTEXT_DIR=ParksMap -n stk-jenkins
+oc new-app -f ./Infrastructure/templates/jenkins-bc-pipeline.yaml -p GUID=$GUID -p CLUSTER_NAME=$CLUSTER -p APPLICATION_NAME=parksmap -p CONTEXT_DIR=ParksMap -n $GUID-jenkins
 echo "##########################################################################################################################################"
 
 
