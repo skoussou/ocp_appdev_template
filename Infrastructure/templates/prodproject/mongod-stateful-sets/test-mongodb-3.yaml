@@ -1,0 +1,123 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: mongodb-stateful-sets
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: mongodb
+  spec:
+    ports:
+    - name: mongodb
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      name: mongodb
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+    labels:
+      name: mongodb
+    name: mongodb-internal
+  spec:
+    clusterIP: None
+    ports:
+    - name: mongodb
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      name: mongodb
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      name: mongodb
+    name: mongodb
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        name: mongodb
+    serviceName: mongodb-internal
+    template:
+      metadata:
+        labels:
+          name: mongodb
+      spec:
+        containers:
+        - args:
+          - run-mongod-replication
+          env:
+          - name: MONGODB_DATABASE
+            value: mongodb
+          - name: MONGODB_USER
+            value: mongodb
+          - name: MONGODB_PASSWORD
+            value: mongodb
+          - name: MONGODB_ADMIN_PASSWORD
+            value: mongodb
+          - name: MONGODB_REPLICA_NAME
+            value: rs0
+          - name: MONGODB_KEYFILE_VALUE
+            value: "12345678901234567890"
+          - name: MONGODB_SERVICE_NAME
+            value: mongodb-internal
+          image: registry.access.redhat.com/rhscl/mongodb-32-rhel7:3.2
+          imagePullPolicy: IfNotPresent
+          name: mongodb-container
+          ports:
+          - containerPort: 27017
+            name: mongodb
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                --eval="quit()"
+            failureThreshold: 3
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mongodb/data
+            name: mongo-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        name: mongo-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

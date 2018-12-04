@@ -21,7 +21,7 @@ oc policy add-role-to-user edit system:serviceaccount:${GUID}-jenkins:jenkins -n
 echo 
 echo " DONE:	Create a MongoDB database"
 
-oc new-app -f ../templates/dev-project/stk-parks-dev-mongodb-WITHPARAMS-NEW-SECRETS.yaml -p DATABASE_SERVICE_NAME=mongodb -p MONGODB_ADMIN_PASSWORD=mongodb -p MONGODB_DATABASE=parks -p MONGODB_PASSWORD=mongodb -p MONGODB_USER=mongodb -l app=mongodb -n ${GUID}-parks-dev
+oc new-app -f ../templates/devproject/stk-parks-dev-mongodb-WITHPARAMS-NEW-SECRETS.yaml -p DATABASE_SERVICE_NAME=mongodb -p MONGODB_ADMIN_PASSWORD=mongodb -p MONGODB_DATABASE=parks -p MONGODB_PASSWORD=mongodb -p MONGODB_USER=mongodb -l app=mongodb -n ${GUID}-parks-dev
 
 echo sleeping 10 secs
 sleep 10s
@@ -72,8 +72,8 @@ echo " DONE:	Expose and label the services properly (parksmap-backend)"
 # oc set deployment-hook dc/mlbparks --post --container=nationalparks -- curl -s http://nationalparks:8080/ws/data/load/ 
 # oc rollout resume dc mlbparks
 echo "Creating APPLICATION_NAME=mlbparks in ${GUID}-parks-dev"
-#oc new-app -f ../templates/dev-project/stk-parks-dev-APP-MLBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p CLUSTER_NAME=na39.openshift.opentlc.com -l app=mlbparks -n ${GUID}-parks-dev
-oc new-app -f ../templates/dev-project/stk-parks-dev-APP-MLBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p CLUSTER_NAME=$CLUSTER -l app=mlbparks -n ${GUID}-parks-dev
+#oc new-app -f ../templates/devproject/stk-parks-dev-APP-MLBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p CLUSTER_NAME=na39.openshift.opentlc.com -l app=mlbparks -n ${GUID}-parks-dev
+oc new-app -f ../templates/devproject/stk-parks-dev-APP-MLBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=mlbparks -p CLUSTER_NAME=$CLUSTER -l app=mlbparks -n ${GUID}-parks-dev
 
 # oc create configmap nationalparks-config --from-literal=APPNAME='National Parks (Dev)' --from-literal=DB_HOST=mongodb --from-literal=DB_PORT=27017 --from-literal=DB_USERNAME=mongodb --from-literal=DB_PASSWORD=mongodb --from-literal=DB_NAME=parks -n stk-parks-dev
 # Set probes
@@ -83,8 +83,8 @@ oc new-app -f ../templates/dev-project/stk-parks-dev-APP-MLBPARKS-dc-cm-secrets.
 # oc set deployment-hook dc/nationalparks --post --container=nationalparks -- curl -s http://nationalparks:8080/ws/data/load/ 
 # oc rollout resume dc nationalparks
 echo "Creating APPLICATION_NAME=nationalparks in ${GUID}-parks-dev"
-#oc new-app -f ../templates/dev-project/stk-parks-dev-APP-NATIONALBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p CLUSTER_NAME=na39.openshift.opentlc.com -l app=nationalparks -n ${GUID}-parks-dev
-oc new-app -f ../templates/dev-project/stk-parks-dev-APP-NATIONALBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p CLUSTER_NAME=$CLUSTER -l app=nationalparks -n ${GUID}-parks-dev
+#oc new-app -f ../templates/devproject/stk-parks-dev-APP-NATIONALBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p CLUSTER_NAME=na39.openshift.opentlc.com -l app=nationalparks -n ${GUID}-parks-dev
+oc new-app -f ../templates/devproject/stk-parks-dev-APP-NATIONALBPARKS-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=nationalparks -p CLUSTER_NAME=$CLUSTER -l app=nationalparks -n ${GUID}-parks-dev
 
 # oc create configmap parksmap-config --from-literal=APPNAME='ParksMap (Dev)' -n ${GUID}-parks-dev
 # Set probes
@@ -94,7 +94,7 @@ oc new-app -f ../templates/dev-project/stk-parks-dev-APP-NATIONALBPARKS-dc-cm-se
 # oc rollout resume dc parksmap
 echo "Creating APPLICATION_NAME=parksmap in ${GUID}-parks-dev"
 oc policy add-role-to-user view --serviceaccount=default
-#oc new-app -f ../templates/dev-project/stk-parks-dev-APP-PARKSMAP-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p CLUSTER_NAME=na39.openshift.opentlc.com -l app=parksmap -n ${GUID}-parks-dev
-oc new-app -f ../templates/dev-project/stk-parks-dev-APP-PARKSMAP-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p CLUSTER_NAME=$CLUSTER -l app=parksmap -n ${GUID}-parks-dev
+#oc new-app -f ../templates/devproject/stk-parks-dev-APP-PARKSMAP-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p CLUSTER_NAME=na39.openshift.opentlc.com -l app=parksmap -n ${GUID}-parks-dev
+oc new-app -f ../templates/devproject/stk-parks-dev-APP-PARKSMAP-dc-cm-secrets.yaml -p GUID=${GUID} -p APPLICATION_NAME=parksmap -p CLUSTER_NAME=$CLUSTER -l app=parksmap -n ${GUID}-parks-dev
 
 echo "#################################################################################################"
