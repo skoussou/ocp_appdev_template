@@ -69,8 +69,6 @@ while : ; do
   sleep 10
 done
 
-sleep 10s
-
 # annotate correctly the routes for console
 echo
 echo
@@ -84,10 +82,10 @@ echo
 echo
 echo "#####################################################################"
 echo "Configuring NEXUS"
-echo "./Infrastructure/templates/setup_nexus3.sh admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')"
+echo "./Infrastructure/bin/templates/setup_nexus3.sh admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')"
 echo "#####################################################################"
 
-SCRIPT_PATH="./Infrastructure/extras/configure_nexus3.sh"
+SCRIPT_PATH="./Infrastructure/bin/extras/configure_nexus3.sh"
 source "$SCRIPT_PATH"
 . "$SCRIPT_PATH" admin admin123 http://$(oc get route nexus3 --template='{{ .spec.host }}')
 
