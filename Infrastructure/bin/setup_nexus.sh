@@ -69,6 +69,8 @@ while : ; do
   sleep 10
 done
 
+sleep 15s
+
 # annotate correctly the routes for console
 echo
 echo
