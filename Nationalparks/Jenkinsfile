@@ -135,7 +135,7 @@ podTemplate(
           // sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
 
           def uploadToJenkins = sh(returnStatus: true, script: "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/")
-          echo "NEXUS UPLOAD SUCCESS STATUS--> ${appGreenStatus}"
+          echo "NEXUS UPLOAD SUCCESS STATUS--> ${uploadToJenkins}"
         }
     }
 
