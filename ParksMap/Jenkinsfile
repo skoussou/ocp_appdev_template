@@ -130,7 +130,8 @@ podTemplate(
     stage('Publish to Nexus') {
         dir ('ParksMap') {  
             echo "Publish to Nexus"
-            sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
+            //sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
+            sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-snapshots/"
         }
     }
 
