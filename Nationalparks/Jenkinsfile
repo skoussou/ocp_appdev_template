@@ -130,8 +130,12 @@ podTemplate(
     stage('Publish to Nexus') {
         dir ('Nationalparks') {  
             echo "Publish to Nexus"
-            //sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
-            sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-snapshots/"
+
+          // original but because no changes in pom.xml destined to fail
+          // sh "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/"
+
+          def uploadToJenkins = sh(returnStatus: true, script: "${mvnCmd} deploy -DURL=${nexusMavenPublicRepoURL} -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.svc.cluster.local:8081/repository/maven-releases/")
+          echo "NEXUS UPLOAD SUCCESS STATUS--> ${appGreenStatus}"
         }
     }
 
